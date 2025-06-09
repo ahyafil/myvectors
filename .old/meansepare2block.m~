@@ -1,0 +1,21 @@
+% mixte de meansepare2 et meanblock
+%meansepareblock(Y,X1,X2, n) calcule par blocks de n les moyennes de Y selon les
+%valeurs (entières) de X1 et X2
+
+function [Ym Ystd]=meansepareblock(Y,X1, X2, n, extrait)
+
+X3 = ceil([1:length(Y)]/n);
+
+if nargin==5,
+    Y=Y(:,extrait);
+    X1=X1(:,extrait);
+    X2=X2(:,extrait);
+    X3 = X3(:,extrait);
+end
+
+[Ym Ystd] = meanseparen(Y, 
+
+%for i=1:floor(length(X1)/n)
+%    [Ym(:,:,i) Ystd(:,:,i)]=meansepare2(Y,X1,X2,i*n-n+1:i*n);
+%end
+    

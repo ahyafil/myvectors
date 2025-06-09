@@ -1,0 +1,123 @@
+% Y = sepfun( FUN, Y, X)
+%
+%
+%sepfun(Y,X [,extrait], options)
+%sepfun(..., 'max', n)
+%sepfun(..., 'dim', d)  to work on a specific dimension of Y (by
+%default 2nd dimension, i.e. along lines)
+%
+%sepfun(..., 'UniformOutput', false) same as for cellfun
+%
+%sepfun(..., 'UniformInput', true) to work directly on submatrices
+%(makes it faster, but caution to use it on the right dimension)
+
+
+function varargout = sepfun(fun, Y,X, extrait, varargin)
+
+
+%default values
+dim = 2;
+maxvalue = [];
+unifout = 1;
+unifin = 0;
+
+%processing of parameters
+v = 1;
+while v+4<=nargin
+    if ~ischar(varargin{v})
+        error('unsupported parameter type for parameter #%d',v+4);
+    end
+    switch lower(varargin{v})
+        case 'max'
+            v = v+1;
+            maxvalue = varargin{v};
+        case {'dim', 'dimension'}
+            v = v+1;
+            dim = varargin{v};
+        case 'unifoutormoutput'
+            v = v +1;
+            unifout = varargin{v};
+        case 'uniforminput'
+            v = v +1;
+            unifin = varargin{v};
+        otherwise
+            error('unknown parameter #%d',v+4);
+    end
+    v = v+1;
+end
+
+
+
+%index for all values within Y
+Idx = cell(1,ndims(Y));
+for d=1:ndims(Y)
+    Idx{d} = 1:size(Y,d);
+end
+
+%only use an excerpt of the data (if required)
+if nargin>=4 && ~isempty(extrait),
+    X=X(extrait);
+    Idx{dim} = extrait;
+    Y=Y(Idx{:});
+end
+
+maxX = max(X);
+
+
+%warning('off','MATLAB:colon:logicalInput')
+%warning('off','MATLAB:divideByZero')
+%pre-assign Z size
+if isempty(maxvalue),
+    maxvalue = maxX;
+end
+
+
+%get cell array with seperate values
+Z = cell(1,maxvalue);
+Z(1:maxX) = separe(Y,X,dim);
+
+if unifin   %apply the function directly to cell elements
+    
+    
+    [ZZ{1:nargout}] = cellfun(fun, Z, 'UniformOutput', false);
+    for arg = 1:nargout
+    varargout{arg} = cat(dim, ZZ{arg}{:});
+    end
+    %     for i=1:maxX
+    %     Idx{dim} = i;
+    %     Ymean(Idx{:}) = nanmean(Z{i},dim);
+    %     if nargout ==2,
+    %         if strcmp(stdste,'std')
+    %             Yste(Idx{:}) = nanstd(Z{i},0,dim);
+    %         else
+    %             Yste(Idx{:}) = ste(Z{i},dim);
+    %         end
+    %     end
+    %end
+    
+    
+else  %apply the function separately for each values in the other dimensions
+    %transform into cell array of appropriate size
+    nsep = zeros(1,maxvalue);
+    nsep(1:maxX) = sumsepare(X);  %number of elements of X for each value
+    Z = cat(dim,Z{:});            %concatenate to make it a n-dim matrix again
+    cellsiz = cell(1,ndims(Y));
+    for d = 1:ndims(Y)
+        cellsiz{d} = ones(1,size(Y,d));
+    end
+    cellsiz{dim} = nsep;
+    Z = mat2cell(Z, cellsiz{:}); %put it back into a cell of array
+    
+    Z = cellfun(@(x) x(:),Z, 'UniformOutput', false);
+    
+    %apply function onto each element of cell array
+    varargout{:} = cellfun(fun, Z, 'UniformOutput', unifout);
+end
+
+% %apply the function to each element of the cell array
+% for i=maxvalue
+%     Idx{dim} = i;
+%     varargout{1}(Idx{:}) = fun(Z{i});
+% end
+
+

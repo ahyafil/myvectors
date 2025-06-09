@@ -1,0 +1,18 @@
+function [Mmin Mstd]=neuronsepare2(Ne, num, A, B, debuenreg, finenreg, plotte)
+%[Mmin Mstd]=neuronsepare2(Ne, num, A, B, debuenreg, finenreg, plotte)
+
+colaz = defcolor;
+
+
+cl[Mmin Mstd]=meansepare2(Ne(:,:,num), A(debuenreg:finenreg), B(debuenreg:finenreg));
+Mmin=permute(Mmin, [3 1 2]); % d'abord selon B, puis time, puis A
+Mstd=permute(Mstd, [3 1 2]);
+
+if plotte,
+    for k=1:max(B)
+        for l=1:max(A)
+    pc(Mmin(:,l,k), colaz{1+mod(k-1,7)},'-', 1/2+l/2);
+    hold on;
+        end
+    end
+end

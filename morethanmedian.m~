@@ -1,0 +1,23 @@
+function [Z Ymean]=morethanmedian(Y, matX, extrait)
+%[Z Ymean]=morethanmedian(Y, matX) returns a boolean vector
+%having true for all Y values thare are greater than their related
+%sub-median value( grouped according to the values in matX )
+
+
+if nargin>=3,
+    Yin=Y(:,extrait);
+    matXin=matX(:,extrait);
+else
+    Yin=Y
+end
+
+Ymedian = medianseparen(Yin, matXin);
+
+
+Zin=zeros(size(Yin));
+for i=1:length(Y)
+    coords = num2cell(matX(:,i)');
+    Zin(i) = Y(i)> Ymedian(coords{:});
+end
+
+Z = -ones(size(Y));

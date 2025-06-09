@@ -1,0 +1,20 @@
+function b = vecteq(vect1, vect2)
+%vecteq(vect1, vect2) is true only if vect1 and vect2 are equal matrices
+%(same size, same elements)
+%first parameter can also be a cell of arrays, and vect2 is compared to all
+%of them (the output is then a boolean matrix the size of the cell
+
+if iscell(vect1),
+    
+    
+    
+b=false;
+if ndims(vect1) == ndims(vect2)
+   if all(size(vect1) == size(vect2))
+       if all(vect1 == vect2)
+           b=true;
+       end
+   end
+end
+
+end

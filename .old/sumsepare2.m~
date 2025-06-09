@@ -1,0 +1,28 @@
+%%calcule les sommes d'en tableau en séparant 
+%%les valeurs en fonction des valeurs de 2 tableaux d'entiers (utilise
+%%la fonction separe2.m
+%%on peut mettre un quatrième argument: restreindre l'analyse à un
+%%sous-ensemble des données
+%%
+%%sumsepare(X1,X2) renvoie le nombre de fois où chaque combi d'entiers 
+
+function Ysum=sumsepare2(Y,X1,X2,extrait)
+
+if nargin==4,
+    Y=Y(extrait);
+    X1=X1(:,extrait);
+    X2=X2(:,extrait);
+end
+if nargin==2,
+    X2=X1;
+    X1=Y;
+    Y=ones(1,length(X1));
+end
+
+Z=separe2(Y,X1,X2);
+
+for i=1:max(X1)
+    for j=1:max(X2)
+    Ysum(i,j)=sum(Z{i,j},2);
+        end
+end

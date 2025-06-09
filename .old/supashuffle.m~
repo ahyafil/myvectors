@@ -1,0 +1,176 @@
+function tab = supashuffle(sample, varargin)
+% melange(tableau [,nb ˆ extraire] [,mode]) mŽlange compltement le tableau d'entrŽe
+% et renvoie en sortie le nb  d'ŽlŽments spŽcifiŽ par l'utilisateur (ˆ
+% dŽfaut toutes les valeurs
+%
+%*diffŽrents modes:
+%-0 (par dŽfaut): un ŽlŽment n'est utilisŽ qu'une fois ; si le nb rentrŽ est supŽrieur au nb d'ŽlŽments,
+%alors complte en utilisant autant de fois le tableau que nŽcessaire
+%-1 (pas codŽ): un ŽlŽment n'est utilisŽ qu'une fois ; si le nb rentrŽ est supŽrieur au nb d'ŽlŽments,
+%melange le tableau des nb entiers puis rŽaffecte avec un modulo chaque ŽlŽment ˆ l'emplacement correspondant
+%-2: chaque ŽlŽment est tirŽ au sort indŽpendamment
+% melange (tableau, nb, m) s'assure qu'un ŽlŽment ne soit rŽpŽtŽ dans les m
+% ŽlŽments suivants
+% melange(tableau, nb, -m) s'assure qu'un ŽlŽment ne soit pas rŽpŽtŽ n fois
+% d'affilee
+
+l=length(sample);
+
+if nargin>1 && isnumeric(varargin{1}) && length(varargin{1})==1,
+    n = varargin{1};
+    varargin{1} = [];
+else
+    n = l;
+end
+mode = 'frequency';
+w = ones(1,l)/l;
+constraints = {};
+trans = [];
+
+
+for v=1:length(varargin)
+    varg = varargin{v};
+    switch class(varg),
+        case 'char',
+            switch varg,
+                case {'counts','frequency','block'},
+                    mode = varg;
+                case 'transition',
+                    equitransit = 1;  %to do later
+                otherwise   %custom formula
+                    constraints{end+1} = varg;
+            end
+        case 'double',
+            if isvector(varg),
+                if length(varg) == l,
+                    w = varg;
+                else
+                    error('The distribution vector must have the same length as the sample');
+                end
+            else
+                if isequal(size(varg), [l l]),
+                    trans = varg;
+                else
+                    error('The transition matrix must have as many rows and columns as elements in the sample');
+                end
+            end
+        case 'cell',
+            if length(varg)==2 && isdouble(varg{1}),
+                constraints{end+1} = varg;
+            else
+                error('Mad constraints cells must contains a vector then the additional constraint');
+            end
+        otherwise
+            error('unsupported data type');
+    end
+end
+      
+if strcmp(mode, 'block') && ~isempty(w),
+    error('Cannot set non-constant distribution in the block mode');
+end
+
+   w = w(:)'/sum(w); %normalize
+   if isequal(trans,1),  %
+        trans = repmat(w, l, 1);
+   end
+if ~isempty(trans) &&sum(sum(trans))~= n-1,
+    error('Total number of transitions must match the length of the sample (minus one)');
+end
+if ~isempty(trans) && any(sum(trans,1) ~= sum(trans,2)'),
+    error('Transition matrix : sum of rows and columns must match');
+end
+   
+for c = 1:length(constraints),
+    if ~isnumeric(constraints{c}{1}),
+        constraints{c} = [{eye(l)} constraints{c}];
+    end
+end
+constraints{end+1} = {eye(l), w, mode};
+if ~isempty(trans),
+    constraints{end+1} = {eye(l), trans, mode};
+end
+
+
+   flag = false;
+   
+   while ~flag  %start from scratch
+       
+       flag = true; 
+   
+       constraints2 = constraints;
+       trans2 = trans;
+       
+       samp = [];
+       
+       
+       for i =1:n
+           
+   choice = ones(
+           
+           
+       end
+   end
+   
+   
+if nargin==1, nbextrac=l; end
+tabsorty=zeros(1,nbextrac);
+if nargin<=2, modd=0; end
+
+if modd<2 %on mŽlange le tableau
+
+    if nargin<4,  %sans l'option parepet
+
+
+
+        if nbextrac<=l  % le cas normal
+
+            for i=1:nbextrac
+                place= i+floor(rand*(l-i+1)); % echange le ime ŽlŽment avec un ˆ la place 'place' situŽ aprs
+                tampon=tabentre(i);
+                tabentre(i)=tabentre(place);
+                tabentre(place)=tampon;
+                tabsorty=tabentre(1:nbextrac);
+            end
+        else %%on dŽcoupe le problme
+            for j=1:ceil(nbextrac/l)
+                tabinter((j-1)*l+1:min(j*l,nbextrac))=melange(tabentre,min(l,nbextrac-(j-1)*l)); %on rajoute un tableau entier mŽlangŽ, ou bien juste un bout le dernier coup
+            end
+            tabsorty=tabinter(1:nbextrac);
+        end
+
+
+    else %avec l'option parepet
+
+        recommence=1;
+        while recommence
+            tabsorty=melange(tabentre,nbextrac,modd);
+            if parepet>=0  %
+                recommence=0;
+                for m=1:parepet
+                    recommence=recommence+sum(tabsorty==decale(tabsorty,m));  %onn rajoute le nb de fois o ya un mme ŽlŽment dŽcalŽ de m places
+                end
+            else % pas une valeur trop de fois d'affilee
+                recommence=affilee(tabsorty,-parepet);
+            end
+        end
+    end
+
+
+
+else  %en mode2, choisit chaque ŽlŽment indŽpendamment
+
+    if nargin==3,parepet=0; end
+
+    tabsorty=tabentre;   %juste pour que si c'est caractres, tabsorty soit aussi de type string
+    for place=1:nbextrac,
+        if parepet>=0,  %exclure les parepet-1 derniers ŽlŽments du tirage
+        exclusset=tabsorty(max(place-parepet,1):place-1);
+        else   %exclure un ŽlŽment si rŽpŽtŽ dans les -parepet-1 derniers ŽlŽments
+            exclusset=[];
+        if  (place>=-parepet)&&(affilee(tabsorty(place+parepet+1:place-1),-parepet-1)), exclusset=tabsorty(place-1); end   
+        end
+        tabpos=setdiff(tabentre,exclusset);
+        tabsorty(place)=tabpos(ceil(rand*length(tabpos)));
+    end
+    tabsorty=tabsorty(1:nbextrac);
+end

@@ -1,0 +1,22 @@
+%%calcule les covariances de 2 vecteurs Y1 et Y2 séparément pour chaque valeur 
+%%prise par un tableau X :
+%%covsepare(Y1, Y2, X, extrait)
+%%
+%%on peut mettre un quatrième argument: restreindre l'analyse à un
+%%sous-ensemble des données
+
+function [Ymean Ystd]=covsepare(Y1, Y2, X, extrait)
+if nargin==4,
+    Y1=Y1(:,extrait);
+    Y2=Y2(:,extrait);
+    X=X(:,extrait);
+end
+warning('off','MATLAB:colon:logicalInput')
+warning('off','MATLAB:divideByZero')
+Z1=separe(Y1,X);
+Z2=separe(Y2,X);
+for i=1:max(X)
+    ean(Z{i},2);
+    Ymean(:,i)=mean(Z{i},2);
+    Ystd(:,i)=std(Z{i},0,2);
+end
