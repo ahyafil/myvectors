@@ -126,7 +126,8 @@ if nargin >=4
                         plotfun = varargin{v};
                     case {'color', 'curve','linewidth', 'linestyle', 'marker', 'markersize',...
                             'facecolor','verticallabel',...
-                            'barwidth', 'errorbarwidth','ticklength','errorstyle', 'title', 'name', 'xtick', 'permute','axis','xtickrotate','ylabel','legend'}
+                            'barwidth', 'errorbarwidth','ticklength','errorstyle', 'title', 'name', 'xtick',...
+                            'permute','collapse','axis','xtickrotate','ylabel','legend'}
                         doplot = 1;
                         plotopt(end+1:end+2) = varargin(v:v+1);  %add to plot options
                         v = v+1;
