@@ -54,22 +54,10 @@ multidim = 'direct';  %how to apply the function when there are multiple groupin
 
 %default plot options values
 %default values
-doplot = 0;
-plotopt = {};
-plottype = 'line';
-plotfun = [];
-%errtype = '';
-
-% %look in arguments ...
-% etypes = {'noerror', 'std', 'sem'}; %... for error type
-% for t=1:length(etypes),
-%     isarg = cellfun(@(x) isequal(x,etypes{t}), varargin(3:end));
-%     if any(isarg),
-%         errtype = etypes{t};
-%         varargin(find(isarg)+2) = []; %remove this parameter from list of arguments
-%     end
-% end
-
+doPlot = 0;
+PlotOptions = {};
+PlotType = 'line';
+PlotFun = [];
 
 %% process arguments
 if ~iscell(fun)
@@ -90,10 +78,8 @@ if nargin >=4
     %other parameters
     while v+3 <= nargin
         switch class(varargin{v})
-            case 'char'
-                
-                
-                switch lower(varargin{v})
+            case 'char'                
+                                switch lower(varargin{v})
                     case 'max'
                         v = v+1;
                         maxvalue = varargin{v};
@@ -119,31 +105,31 @@ if nargin >=4
                         v = v+1;
                         multidim = varargin{v};
                     case 'plot'
-                        doplot = 1;
+                        doPlot = 1;
                     case 'plotfun'
                         %  doplot = 1;
                         v = v + 1;
-                        plotfun = varargin{v};
+                        PlotFun = varargin{v};
                     case {'color', 'curve','linewidth', 'linestyle', 'marker', 'markersize',...
                             'facecolor','verticallabel',...
                             'barwidth', 'errorbarwidth','ticklength','errorstyle', 'title', 'name', 'xtick',...
                             'permute','collapse','axis','xtickrotate','ylabel','legend'}
-                        doplot = 1;
-                        plotopt(end+1:end+2) = varargin(v:v+1);  %add to plot options
+                        doPlot = 1;
+                        PlotOptions(end+1:end+2) = varargin(v:v+1);  %add to plot options
                         v = v+1;
                     case {'line', 'bar', 'noplot', 'imagesc'}
-                        doplot = 1;
-                        plottype = varargin{v};
+                        doPlot = 1;
+                        PlotType = varargin{v};
                     case {'var', 'variable', 'vars', 'varname', 'varnames', 'variables'}
-                        doplot = 1;
+                        doPlot = 1;
                         v = v+1;
-                        plotopt{end+1} = varargin{v};
+                        PlotOptions{end+1} = varargin{v};
                     otherwise
                         error('unknown parameter: %s',varargin{v});
                 end
                 
             case 'cell'
-                plotopt{end+1} = varargin{v};   %variable names or group names
+                PlotOptions{end+1} = varargin{v};   %variable names or group names
                 
             otherwise
                 error('gfun:unsupportedparameter', 'unsupported parameter type for parameter #%d',v+3);
@@ -312,23 +298,23 @@ end
 varargout = [V {gnames gnames2} ];
 
 %% plot
-if doplot
-    if isempty(plotfun)
-        plotfun = 1:min(2,nout);
+if doPlot
+    if isempty(PlotFun)
+        PlotFun = 1:min(2,nout);
     end
     
-    switch length(plotfun)  %plot only raw or raw and error values
+    switch length(PlotFun)  %plot only raw or raw and error values
         case 1
-            [~, ~, plothandle] = wu(V{plotfun(1)}, [], gnames2, plottype, plotopt{:});   %if only one output : no error bar
+            [~, ~, plothandle] = wu(V{PlotFun(1)}, [], gnames2, PlotType, PlotOptions{:});   %if only one output : no error bar
             
         case 2
-            [~, ~, plothandle] = wu(V{plotfun}, gnames2, plottype, plotopt{:});   %with error bar
+            [~, ~, plothandle] = wu(V{PlotFun}, gnames2, PlotType, PlotOptions{:});   %with error bar
         otherwise
             error('gfun: can plot only if no more than two output matrices');
     end
       varargout{end+1} = plothandle;
-    %else
-    %    varargout(end-1) = [];
+    else
+        varargout{end+1} = [];
 end
 
 

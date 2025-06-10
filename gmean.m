@@ -55,7 +55,7 @@ multidim = repmat({'merge'}, 1, length(fun));  %if more than one dimensions : me
 
 
 %% apply the function to each group
-varargout = cell(1,2+length(fun)); %number of output arguments from gfun
+varargout = cell(1,3+length(fun)); %number of output arguments from gfun
 try
     [varargout{:}] = gfun(fun, varargin{1:2}, varargin{3:end}, 'multidim', multidim , 'plotfun', plotfun);
 catch err
